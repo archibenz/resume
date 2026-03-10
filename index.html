@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Коломиец Александр — Resume</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #110A07;
+    --bg2: #1E120D;
+    --bg3: #241510;
+    --accent: #D4A574;
+    --accent2: #C9955F;
+    --accent3: #9A3A2A;
+    --text: #F3E9DA;
+    --text-dim: #A89882;
+    --card-bg: rgba(212,165,116,0.03);
+    --border: rgba(212,165,116,0.1);
+    --glow: 0 24px 48px rgba(43,23,17,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* === NOISE TEXTURE OVERLAY === */
+  .noise-overlay {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+  }
+
+  /* === VIGNETTE === */
+  .vignette {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(17,10,7,0.6) 100%);
+  }
+
+  /* === ANIMATED BACKGROUND GLOWS === */
+  .bg-glow {
+    position: fixed; z-index: 0; pointer-events: none;
+    width: 600px; height: 600px; border-radius: 50%;
+    filter: blur(140px); opacity: 0.08;
+    animation: floatGlow 25s ease-in-out infinite;
+  }
+  .bg-glow.g1 { top: -200px; left: -100px; background: var(--accent); }
+  .bg-glow.g2 { bottom: -200px; right: -100px; background: var(--accent3); animation-delay: -12s; }
+
+  @keyframes floatGlow {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(60px, 40px) scale(1.1); }
+    66% { transform: translate(-30px, 70px) scale(0.95); }
+  }
+
+  /* === LANG TOGGLE — BOTTOM CENTER === */
+  .lang-toggle {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; display: flex; gap: 2px;
+    background: rgba(30,18,13,0.85); border: 1px solid var(--border);
+    border-radius: 30px; padding: 4px;
+    backdrop-filter: blur(20px) saturate(1.2);
+  }
+  .lang-btn {
+    padding: 6px 18px; border: none; border-radius: 26px;
+    background: transparent; color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    letter-spacing: 0.08em;
+  }
+  .lang-btn.active {
+    background: var(--accent); color: var(--bg);
+    box-shadow: 0 0 20px rgba(212,165,116,0.25);
+  }
+
+  /* === NAV === */
+  nav {
+    position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; display: flex; gap: 2px;
+    background: rgba(30,18,13,0.85); border: 1px solid var(--border);
+    border-radius: 30px; padding: 4px;
+    backdrop-filter: blur(20px) saturate(1.2);
+  }
+  nav a {
+    padding: 8px 18px; border-radius: 26px;
+    color: var(--text-dim); text-decoration: none;
+    font-size: 13px; font-weight: 500; transition: all 0.3s;
+    position: relative; letter-spacing: 0.02em;
+  }
+  nav a:hover { color: var(--accent); background: rgba(212,165,116,0.08); }
+  nav a.active { color: var(--accent); background: rgba(212,165,116,0.1); }
+  nav a.active::after {
+    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 16px; height: 1.5px; border-radius: 2px;
+    background: var(--accent); box-shadow: 0 0 8px rgba(212,165,116,0.4);
+  }
+
+  /* === CONTAINER === */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  section { padding: 80px 0; opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); }
+  section.visible { opacity: 1; transform: translateY(0); }
+
+  /* === HERO === */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    padding-top: 80px;
+  }
+  .hero-badge {
+    display: inline-block; padding: 8px 22px; border-radius: 20px;
+    background: rgba(212,165,116,0.06); border: 1px solid rgba(212,165,116,0.15);
+    color: var(--accent); font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; margin-bottom: 28px; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    animation: fadeInUp 0.8s 0.2s both;
+  }
+  .hero h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5rem); font-weight: 800;
+    line-height: 1.1; margin-bottom: 20px; letter-spacing: -0.03em;
+    animation: fadeInUp 0.8s 0.4s both;
+  }
+  .hero h1 .gradient {
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 1.1rem; color: var(--text-dim); max-width: 520px;
+    margin-bottom: 40px; animation: fadeInUp 0.8s 0.6s both;
+    font-weight: 300; line-height: 1.8;
+  }
+  .hero-links {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    animation: fadeInUp 0.8s 0.8s both;
+  }
+  .hero-links a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 14px 28px; border-radius: 30px;
+    text-decoration: none; font-size: 13px; font-weight: 500;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    letter-spacing: 0.04em;
+  }
+  .hero-links a.primary {
+    background: var(--accent); color: var(--bg);
+    box-shadow: 0 8px 32px rgba(212,165,116,0.2);
+  }
+  .hero-links a.primary:hover {
+    box-shadow: 0 12px 44px rgba(212,165,116,0.35);
+    transform: translateY(-2px);
+  }
+  .hero-links a.secondary {
+    border: 1px solid var(--border); color: var(--text);
+    background: rgba(212,165,116,0.04);
+    backdrop-filter: blur(10px);
+  }
+  .hero-links a.secondary:hover {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(212,165,116,0.08);
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 40px;
+    animation: bounce 2.5s ease-in-out infinite;
+    color: var(--text-dim); font-size: 20px; opacity: 0.5;
+  }
+
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  /* === SECTION TITLES === */
+  .section-title {
+    font-family: 'Manrope', sans-serif;
+    font-size: 2.2rem; font-weight: 700; margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .section-title::before {
+    content: '';
+    display: block; width: 32px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    margin-bottom: 14px;
+  }
+  .section-sub { color: var(--text-dim); margin-bottom: 44px; font-size: 1rem; font-weight: 300; }
+
+  /* === SKILLS GRID === */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .skill-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+  .skill-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.5s;
+  }
+  .skill-card:hover { border-color: rgba(212,165,116,0.2); box-shadow: 0 24px 48px rgba(43,23,17,0.2); }
+  .skill-card:hover::before { opacity: 1; }
+  .skill-card h3 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.05rem; font-weight: 600; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .skill-card h3 .icon { font-size: 1.2rem; opacity: 0.8; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    padding: 5px 14px; border-radius: 20px; font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(212,165,116,0.06); border: 1px solid rgba(212,165,116,0.12);
+    color: var(--accent); transition: all 0.3s; letter-spacing: 0.03em;
+  }
+  .tag:hover { background: rgba(212,165,116,0.14); transform: scale(1.05); }
+  .tag.alt { background: rgba(154,58,42,0.08); border-color: rgba(154,58,42,0.2); color: #D4785A; }
+  .tag.dim { background: rgba(168,152,130,0.08); border-color: rgba(168,152,130,0.15); color: var(--text-dim); }
+
+  /* === TIMELINE === */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px;
+    width: 1px; background: linear-gradient(180deg, var(--accent), var(--accent3), transparent);
+    border-radius: 2px;
+  }
+  .timeline-item { position: relative; margin-bottom: 36px; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -29px; top: 8px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 20px rgba(212,165,116,0.4);
+  }
+  .timeline-item .period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--accent2); margin-bottom: 6px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .timeline-item h3 { font-family: 'Manrope', sans-serif; font-size: 1.2rem; margin-bottom: 4px; font-weight: 600; }
+  .timeline-item .org { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 10px; font-weight: 300; }
+  .timeline-item p { color: var(--text-dim); font-size: 0.88rem; line-height: 1.7; font-weight: 300; }
+
+  /* === PROJECT CARDS === */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .project-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+  .project-card:hover { border-color: rgba(154,58,42,0.3); box-shadow: 0 24px 48px rgba(43,23,17,0.2); }
+  .project-card h3 { font-family: 'Manrope', sans-serif; font-size: 1.15rem; margin-bottom: 10px; font-weight: 600; }
+  .project-card p { color: var(--text-dim); font-size: 0.88rem; margin-bottom: 18px; line-height: 1.7; font-weight: 300; }
+  .project-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* === CERTS === */
+  .certs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .cert-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 18px; padding: 24px;
+    display: flex; align-items: flex-start; gap: 16px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backdrop-filter: blur(10px);
+  }
+  .cert-card:hover { border-color: rgba(212,165,116,0.2); box-shadow: 0 16px 40px rgba(43,23,17,0.15); }
+  .cert-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .cert-card h3 { font-family: 'Manrope', sans-serif; font-size: 1rem; margin-bottom: 4px; font-weight: 600; }
+  .cert-card p { color: var(--text-dim); font-size: 0.82rem; font-weight: 300; }
+
+  /* === CONTACT === */
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .contact-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 20px; border-radius: 18px;
+    background: var(--card-bg); border: 1px solid var(--border);
+    text-decoration: none; color: var(--text);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backdrop-filter: blur(10px);
+  }
+  .contact-item:hover { border-color: var(--accent); box-shadow: 0 12px 32px rgba(43,23,17,0.15); }
+  .contact-item .ci-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; background: rgba(212,165,116,0.08);
+  }
+  .contact-item span { font-size: 0.9rem; }
+  .contact-item small { display: block; color: var(--text-dim); font-size: 0.78rem; }
+
+  /* === FOOTER === */
+  footer {
+    text-align: center; padding: 40px 0 80px; color: var(--text-dim);
+    font-size: 0.82rem; border-top: 1px solid var(--border);
+    margin-top: 40px; font-weight: 300;
+  }
+
+  /* === CURSOR GLOW === */
+  .cursor-glow {
+    position: fixed; width: 400px; height: 400px;
+    border-radius: 50%; pointer-events: none; z-index: 0;
+    background: radial-gradient(circle, rgba(212,165,116,0.06), rgba(154,58,42,0.02) 50%, transparent 70%);
+    transform: translate(-50%, -50%);
+    will-change: transform;
+  }
+
+  /* === RIPPLE EFFECT === */
+  .ripple {
+    position: absolute; border-radius: 50%;
+    background: rgba(212,165,116,0.25);
+    transform: scale(0); animation: rippleAnim 0.6s ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+  /* === CARD SHINE === */
+  .skill-card, .project-card, .cert-card, .goal-card {
+    transform-style: preserve-3d;
+  }
+  .card-shine {
+    position: absolute; inset: 0; border-radius: 18px;
+    pointer-events: none; opacity: 0; transition: opacity 0.4s;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(212,165,116,0.06), transparent 60%);
+  }
+  .skill-card:hover .card-shine, .project-card:hover .card-shine, .cert-card:hover .card-shine, .goal-card:hover .card-shine {
+    opacity: 1;
+  }
+
+  /* === STAGGERED TAGS === */
+  .tags .tag {
+    opacity: 0; transform: translateY(8px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  section.visible .tags .tag { opacity: 1; transform: translateY(0); }
+
+  /* === HERO CANVAS === */
+  .hero-canvas {
+    position: absolute; inset: 0; pointer-events: none;
+    z-index: 0;
+  }
+
+  /* === SOFT SKILLS === */
+  .soft-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .soft-item {
+    padding: 24px; border-radius: 18px;
+    background: var(--card-bg); border: 1px solid var(--border);
+    text-align: center; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backdrop-filter: blur(10px);
+  }
+  .soft-item:hover { border-color: rgba(212,165,116,0.2); box-shadow: 0 16px 40px rgba(43,23,17,0.15); }
+  .soft-icon { font-size: 1.6rem; margin-bottom: 10px; display: block; }
+  .soft-item h4 { font-family: 'Manrope', sans-serif; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
+  .soft-item p { color: var(--text-dim); font-size: 0.8rem; font-weight: 300; line-height: 1.5; }
+
+  /* === GOALS === */
+  .goals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .goal-card {
+    padding: 32px; border-radius: 18px;
+    background: var(--card-bg); border: 1px solid var(--border);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backdrop-filter: blur(10px); position: relative; overflow: hidden;
+  }
+  .goal-card:hover { border-color: rgba(212,165,116,0.2); box-shadow: 0 24px 48px rgba(43,23,17,0.2); }
+  .goal-card .goal-icon { font-size: 2rem; margin-bottom: 16px; display: block; }
+  .goal-card h3 { font-family: 'Manrope', sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
+  .goal-card p { color: var(--text-dim); font-size: 0.88rem; font-weight: 300; line-height: 1.7; }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    nav { display: none; }
+    .hero h1 { font-size: 2.4rem; }
+    .skills-grid, .projects-grid, .certs-grid, .contact-grid { grid-template-columns: 1fr; }
+    .lang-toggle { bottom: 16px; }
+    section { padding: 50px 0; }
+    footer { padding-bottom: 70px; }
+  }
+
+  /* hide lang elements */
+  [data-en] { display: none; }
+  body.en [data-en] { display: initial; }
+  body.en [data-ru] { display: none; }
+</style>
+</head>
+<body>
+
+<div class="noise-overlay"></div>
+<div class="vignette"></div>
+<div class="bg-glow g1"></div>
+<div class="bg-glow g2"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- Lang Toggle — bottom center -->
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('ru')">RU</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- Nav -->
+<nav id="mainNav">
+  <a href="#skills" data-ru>Навыки</a><a href="#skills" data-en>Skills</a>
+  <a href="#soft" data-ru>Soft Skills</a><a href="#soft" data-en>Soft Skills</a>
+  <a href="#projects" data-ru>Проекты</a><a href="#projects" data-en>Projects</a>
+  <a href="#goals" data-ru>Цели</a><a href="#goals" data-en>Goals</a>
+  <a href="#contact" data-ru>Контакты</a><a href="#contact" data-en>Contact</a>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <section class="hero visible" id="hero">
+    <canvas class="hero-canvas" id="heroCanvas"></canvas>
+    <div class="hero-badge">
+      <span data-ru>Software Engineer &bull; Студент 3 курса</span>
+      <span data-en>Software Engineer &bull; 3rd Year Student</span>
+    </div>
+    <h1>
+      <span data-ru>Коломиец<br><span class="gradient">Александр</span></span>
+      <span data-en>Alexander<br><span class="gradient">Kolomiets</span></span>
+    </h1>
+    <p>
+      <span data-ru>Fullstack-разработчик с опытом в системном программировании, сетевых технологиях и веб-разработке. Создаю продукты от идеи до продакшна.</span>
+      <span data-en>Fullstack developer with experience in systems programming, networking, and web development. Building products from idea to production.</span>
+    </p>
+    <div class="hero-links">
+      <a href="https://github.com/archibenz" target="_blank" class="primary">&#9733; GitHub</a>
+      <a href="https://t.me/e555cape" target="_blank" class="secondary">
+        <span data-ru>&#9992; Написать</span>
+        <span data-en>&#9992; Message me</span>
+      </a>
+    </div>
+    <div class="scroll-hint">&#8595;</div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-title"><span data-ru>Навыки</span><span data-en>Skills</span></div>
+    <p class="section-sub">
+      <span data-ru>Технологии и инструменты, с которыми я работаю</span>
+      <span data-en>Technologies and tools I work with</span>
+    </p>
+    <div class="skills-grid">
+
+      <div class="skill-card">
+        <h3><span class="icon">&#128187;</span>
+          <span data-ru>Языки программирования</span>
+          <span data-en>Programming Languages</span>
+        </h3>
+        <div class="tags">
+          <span class="tag">C</span><span class="tag">C++</span>
+          <span class="tag">Python</span><span class="tag">Java</span>
+          <span class="tag">TypeScript</span><span class="tag">Assembly</span>
+          <span class="tag">1C</span><span class="tag">Haskell</span>
+          <span class="tag">Prolog</span><span class="tag">Verilog</span>
+          <span class="tag">Shell</span><span class="tag">SQL</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3><span class="icon">&#127760;</span>
+          <span data-ru>Frontend</span>
+          <span data-en>Frontend</span>
+        </h3>
+        <div class="tags">
+          <span class="tag alt">React</span><span class="tag alt">Next.js</span>
+          <span class="tag alt">TypeScript</span><span class="tag alt">TailwindCSS</span>
+          <span class="tag alt">HTML</span><span class="tag alt">CSS</span>
+          <span class="tag alt">Vite</span><span class="tag alt">next-intl</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3><span class="icon">&#9881;</span>
+          <span data-ru>Backend & базы данных</span>
+          <span data-en>Backend & Databases</span>
+        </h3>
+        <div class="tags">
+          <span class="tag">Node.js</span><span class="tag">Fastify</span>
+          <span class="tag">Spring Boot</span><span class="tag">REST API</span>
+          <span class="tag">PostgreSQL</span><span class="tag">SQLite</span>
+          <span class="tag">JPA/Hibernate</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3><span class="icon">&#128736;</span>
+          <span data-ru>Инструменты & DevOps</span>
+          <span data-en>Tools & DevOps</span>
+        </h3>
+        <div class="tags">
+          <span class="tag dim">Docker</span><span class="tag dim">Kubernetes</span>
+          <span class="tag dim">Git</span><span class="tag dim">Gradle</span>
+          <span class="tag dim">CMake</span><span class="tag dim">Make</span>
+          <span class="tag dim">pnpm</span><span class="tag dim">Vitest</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3><span class="icon">&#128225;</span>
+          <span data-ru>Сети & телекоммуникации</span>
+          <span data-en>Networking & Telecom</span>
+        </h3>
+        <div class="tags">
+          <span class="tag">TCP/IP</span><span class="tag">OSI Model</span>
+          <span class="tag">Routing</span><span class="tag">Telnet</span>
+          <span class="tag">Eltex</span><span class="tag">VLAN</span>
+          <span class="tag">Wireshark</span>
+        </div>
+      </div>
+
+      <div class="skill-card">
+        <h3><span class="icon">&#128202;</span>
+          <span data-ru>Боты & API</span>
+          <span data-en>Bots & APIs</span>
+        </h3>
+        <div class="tags">
+          <span class="tag alt">Telegram Bot API</span><span class="tag alt">aiogram 3</span>
+          <span class="tag alt">Telegraf</span><span class="tag alt">Google Sheets API</span>
+          <span class="tag alt">TON Connect</span><span class="tag alt">zod</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <div class="section-title"><span data-ru>Образование</span><span data-en>Education</span></div>
+    <p class="section-sub">
+      <span data-ru>Моя академическая база</span>
+      <span data-en>My academic background</span>
+    </p>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="period">2023 — <span data-ru>настоящее время</span><span data-en>present</span></div>
+        <h3><span data-ru>Программная инженерия</span><span data-en>Software Engineering</span></h3>
+        <div class="org">
+          <span data-ru>СПбГУТ им. Бонч-Бруевича — 3 курс бакалавриата</span>
+          <span data-en>SPbSUT (Bonch-Bruevich) — 3rd year Bachelor's</span>
+        </div>
+        <p>
+          <span data-ru>Системное программирование, алгоритмы, сетевые технологии, базы данных, архитектура ЭВМ, дискретная математика.</span>
+          <span data-en>Systems programming, algorithms, networking, databases, computer architecture, discrete mathematics.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOFT SKILLS -->
+  <section id="soft">
+    <div class="section-title"><span data-ru>Soft Skills</span><span data-en>Soft Skills</span></div>
+    <p class="section-sub">
+      <span data-ru>Качества, которые помогают мне в работе</span>
+      <span data-en>Qualities that drive my work</span>
+    </p>
+    <div class="soft-grid">
+      <div class="soft-item">
+        <span class="soft-icon">&#9889;</span>
+        <h4><span data-ru>Быстрая обучаемость</span><span data-en>Fast Learner</span></h4>
+        <p><span data-ru>Осваиваю новые технологии за дни, не за месяцы</span><span data-en>Pick up new technologies in days, not months</span></p>
+      </div>
+      <div class="soft-item">
+        <span class="soft-icon">&#127919;</span>
+        <h4><span data-ru>Ориентация на результат</span><span data-en>Results-Driven</span></h4>
+        <p><span data-ru>Довожу проекты до продакшна, а не бросаю на полпути</span><span data-en>Ship to production, never leave things half-done</span></p>
+      </div>
+      <div class="soft-item">
+        <span class="soft-icon">&#129309;</span>
+        <h4><span data-ru>Командная работа</span><span data-en>Teamwork</span></h4>
+        <p><span data-ru>Умею слушать, аргументировать и находить компромиссы</span><span data-en>Listen, reason, and find the right compromise</span></p>
+      </div>
+      <div class="soft-item">
+        <span class="soft-icon">&#128161;</span>
+        <h4><span data-ru>Предпринимательское мышление</span><span data-en>Entrepreneurial Mindset</span></h4>
+        <p><span data-ru>Вижу продукт глазами пользователя и бизнеса</span><span data-en>See products through the eyes of users and business</span></p>
+      </div>
+      <div class="soft-item">
+        <span class="soft-icon">&#128295;</span>
+        <h4><span data-ru>Самостоятельность</span><span data-en>Self-Reliance</span></h4>
+        <p><span data-ru>Fullstack от идеи до деплоя — без ожидания помощи</span><span data-en>Fullstack from idea to deploy — without waiting for help</span></p>
+      </div>
+      <div class="soft-item">
+        <span class="soft-icon">&#128640;</span>
+        <h4><span data-ru>Амбициозность</span><span data-en>Ambition</span></h4>
+        <p><span data-ru>Не боюсь браться за большие задачи и учиться на ходу</span><span data-en>Not afraid of big challenges — learn as I go</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-title"><span data-ru>Проекты</span><span data-en>Projects</span></div>
+    <p class="section-sub">
+      <span data-ru>Кейсы и реальный опыт</span>
+      <span data-en>Cases and real-world experience</span>
+    </p>
+    <div class="projects-grid">
+
+      <div class="project-card">
+        <h3><span data-ru>Fullstack для бренда одежды — REINASLEO</span><span data-en>Fullstack for Clothing Brand — REINASLEO</span></h3>
+        <p>
+          <span data-ru>Полный цикл разработки веб-сайта и Telegram-бота для премиального бренда одежды. Фронтенд, бэкенд, интеграция с ботом, деплой.</span>
+          <span data-en>Full-cycle web app + Telegram bot for a premium clothing brand. Frontend, backend, bot integration, deployment.</span>
+        </p>
+        <div class="project-stack">
+          <span class="tag">TypeScript</span><span class="tag">React</span>
+          <span class="tag alt">Telegram Bot API</span><span class="tag dim">Docker</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <h3><span data-ru>Telegram-бот для бренда — leo_bot</span><span data-en>Telegram Bot for Brand — leo_bot</span></h3>
+        <p>
+          <span data-ru>Бот на aiogram 3 с FSM-архитектурой. Интеграция с Google Sheets API, управление заказами и клиентской базой.</span>
+          <span data-en>Bot built on aiogram 3 with FSM architecture. Google Sheets API integration, order management and CRM.</span>
+        </p>
+        <div class="project-stack">
+          <span class="tag">Python</span><span class="tag alt">aiogram 3</span>
+          <span class="tag dim">Google Sheets API</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <h3><span data-ru>TON Resume Monorepo — ensaios_bot</span><span data-en>TON Resume Monorepo — ensaios_bot</span></h3>
+        <p>
+          <span data-ru>Монорепо с Telegram-ботом и бэкендом. Fastify, TON Connect, AES-256 шифрование, SQLite, rate limiting.</span>
+          <span data-en>Monorepo with Telegram bot and backend. Fastify, TON Connect, AES-256 encryption, SQLite, rate limiting.</span>
+        </p>
+        <div class="project-stack">
+          <span class="tag">TypeScript</span><span class="tag alt">Fastify</span>
+          <span class="tag alt">TON Connect</span><span class="tag dim">SQLite</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <h3><span data-ru>Проект на 1С</span><span data-en>1C Enterprise Project</span></h3>
+        <p>
+          <span data-ru>Разработка конфигурации на платформе 1С:Предприятие. Автоматизация бизнес-процессов, работа с данными и отчётами.</span>
+          <span data-en>Built a configuration on 1C:Enterprise platform. Business process automation, data management, and reporting.</span>
+        </p>
+        <div class="project-stack">
+          <span class="tag">1C</span><span class="tag alt">SQL</span>
+          <span class="tag dim">Business Logic</span>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center; margin-top: 32px;">
+      <a href="https://github.com/archibenz" target="_blank" style="color: var(--accent); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.05em; opacity: 0.7; transition: opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+        <span data-ru>&#8594; Больше на GitHub</span>
+        <span data-en>&#8594; More on GitHub</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- CERTIFICATES -->
+  <section id="certs">
+    <div class="section-title"><span data-ru>Сертификаты</span><span data-en>Certificates</span></div>
+    <p class="section-sub">
+      <span data-ru>Подтверждённые компетенции</span>
+      <span data-en>Verified competencies</span>
+    </p>
+    <div class="certs-grid">
+      <div class="cert-card" onclick="window.open('SPbSUT-NTF1_Сертификат студента.pdf','_blank')" style="cursor:pointer;">
+        <div class="cert-icon">&#127891;</div>
+        <div>
+          <h3><span data-ru>Eltex — Основы сетевых технологий. Часть 1</span><span data-en>Eltex — Network Technologies Fundamentals. Part 1</span></h3>
+          <p><span data-ru>Настройка и администрирование сетевого оборудования Eltex, маршрутизация, коммутация. Июнь 2025</span><span data-en>Configuration and administration of Eltex network equipment, routing, switching. June 2025</span></p>
+        </div>
+      </div>
+      <div class="cert-card" onclick="window.open('SPbSUT-NTF2v2_Сертификат студента.pdf','_blank')" style="cursor:pointer;">
+        <div class="cert-icon">&#127891;</div>
+        <div>
+          <h3><span data-ru>Eltex — Основы сетевых технологий. Часть 2 (v.2)</span><span data-en>Eltex — Network Technologies Fundamentals. Part 2 (v.2)</span></h3>
+          <p><span data-ru>Продвинутый курс: VLAN, ACL, STP, протоколы маршрутизации, Telnet-конфигурация. Декабрь 2025</span><span data-en>Advanced course: VLAN, ACL, STP, routing protocols, Telnet configuration. December 2025</span></p>
+        </div>
+      </div>
+      <div class="cert-card" onclick="window.open('Сертификат участника 2.pdf','_blank')" style="cursor:pointer;">
+        <div class="cert-icon">&#128640;</div>
+        <div>
+          <h3><span data-ru>Участник IT One</span><span data-en>IT One Participant</span></h3>
+          <p><span data-ru>Участие в IT-мероприятии/конференции IT One. Нетворкинг, доклады, обмен опытом.</span><span data-en>Participation in IT One event/conference. Networking, talks, knowledge sharing.</span></p>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon">&#128039;</div>
+        <div>
+          <h3><span data-ru>Участник RusLinuxFest</span><span data-en>RusLinuxFest Participant</span></h3>
+          <p><span data-ru>Участие в фестивале свободного программного обеспечения RusLinuxFest. Linux, open source, системное администрирование.</span><span data-en>Participation in RusLinuxFest — free software festival. Linux, open source, system administration.</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GOALS -->
+  <section id="goals">
+    <div class="section-title"><span data-ru>Цели</span><span data-en>Goals</span></div>
+    <p class="section-sub">
+      <span data-ru>Куда я иду и чего хочу достичь</span>
+      <span data-en>Where I'm headed and what I want to build</span>
+    </p>
+    <div class="goals-grid">
+      <div class="goal-card">
+        <span class="goal-icon">&#128084;</span>
+        <h3><span data-ru>Собственный бренд одежды</span><span data-en>Own Clothing Brand</span></h3>
+        <p>
+          <span data-ru>Уже развиваю проект REINASLEO — премиальный бренд женской одежды с полным digital-стеком. Цель — построить узнаваемый бренд с сильным онлайн-присутствием и автоматизированными процессами.</span>
+          <span data-en>Already building REINASLEO — a premium women's fashion brand with a full digital stack. Goal: build a recognizable brand with strong online presence and automated operations.</span>
+        </p>
+      </div>
+      <div class="goal-card">
+        <span class="goal-icon">&#127968;</span>
+        <h3><span data-ru>Серийное предпринимательство</span><span data-en>Serial Entrepreneurship</span></h3>
+        <p>
+          <span data-ru>Не ограничиваюсь одним проектом. Хочу запускать бизнесы в разных нишах, объединяя технологии и продуктовое мышление. Каждый новый проект — это новый вызов и новый опыт.</span>
+          <span data-en>Not limited to a single venture. I want to launch businesses across different niches, combining technology with product thinking. Each new project is a new challenge and experience.</span>
+        </p>
+      </div>
+      <div class="goal-card">
+        <span class="goal-icon">&#128679;</span>
+        <h3><span data-ru>Рост как инженер</span><span data-en>Growth as an Engineer</span></h3>
+        <p>
+          <span data-ru>Углубляться в системное проектирование, масштабируемые архитектуры и DevOps. Строить продукты, которые работают надёжно под нагрузкой и приносят реальную пользу.</span>
+          <span data-en>Deepen my expertise in system design, scalable architectures and DevOps. Build products that work reliably at scale and deliver real value.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-title"><span data-ru>Контакты</span><span data-en>Contact</span></div>
+    <p class="section-sub">
+      <span data-ru>Буду рад новым предложениям и коллаборациям</span>
+      <span data-en>Open to new opportunities and collaborations</span>
+    </p>
+    <div class="contact-grid">
+      <a href="mailto:archi.benzzz@gmail.com" class="contact-item">
+        <div class="ci-icon">&#9993;</div>
+        <div><span>Email</span><small>archi.benzzz@gmail.com</small></div>
+      </a>
+      <a href="https://github.com/archibenz" target="_blank" class="contact-item">
+        <div class="ci-icon">&#9733;</div>
+        <div><span>GitHub</span><small>archibenz</small></div>
+      </a>
+      <a href="https://t.me/e555cape" target="_blank" class="contact-item">
+        <div class="ci-icon">&#9992;</div>
+        <div><span>Telegram</span><small>@e555cape</small></div>
+      </a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <span data-ru>&copy; 2026 Коломиец Александр. Все права защищены.</span>
+  <span data-en>&copy; 2026 Alexander Kolomiets. All rights reserved.</span>
+</footer>
+
+<script>
+// Language switcher
+function setLang(lang) {
+  document.body.classList.toggle('en', lang === 'en');
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn:${lang === 'en' ? 'last' : 'first'}-child`).classList.add('active');
+}
+
+// Scroll reveal with staggered tags
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.tags .tag').forEach((tag, i) => {
+        tag.style.transitionDelay = (i * 0.05) + 's';
+      });
+    }
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('section:not(.hero)').forEach(s => observer.observe(s));
+
+// === SMOOTH CURSOR GLOW (lerp, no lag) ===
+const glow = document.getElementById('cursorGlow');
+let mouseX = 0, mouseY = 0, glowX = 0, glowY = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+function animateGlow() {
+  glowX += (mouseX - glowX) * 0.12;
+  glowY += (mouseY - glowY) * 0.12;
+  glow.style.left = glowX + 'px';
+  glow.style.top = glowY + 'px';
+  requestAnimationFrame(animateGlow);
+}
+animateGlow();
+
+// === RIPPLE EFFECT ON CLICKABLE ELEMENTS ===
+document.querySelectorAll('.hero-links a, .lang-btn, .contact-item, nav a, .cert-card, .goal-card, .soft-item').forEach(el => {
+  el.style.position = 'relative';
+  el.style.overflow = 'hidden';
+  el.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2;
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    this.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+  });
+});
+
+// === 3D TILT + SHINE ON CARDS ===
+document.querySelectorAll('.skill-card, .project-card, .cert-card, .goal-card').forEach(card => {
+  const shine = document.createElement('div');
+  shine.classList.add('card-shine');
+  card.appendChild(shine);
+
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -4;
+    const rotateY = ((x - centerX) / centerX) * 4;
+
+    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+    card.style.setProperty('--mouse-x', (x / rect.width * 100) + '%');
+    card.style.setProperty('--mouse-y', (y / rect.height * 100) + '%');
+  });
+
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+// === MAGNETIC EFFECT ON BUTTONS ===
+document.querySelectorAll('.hero-links a, .lang-btn').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+  });
+});
+
+// === CONSTELLATION CANVAS IN HERO ===
+const canvas = document.getElementById('heroCanvas');
+const ctx = canvas.getContext('2d');
+let cW, cH;
+const LINK_DIST = 140;
+
+function resizeCanvas() {
+  const hero = canvas.parentElement;
+  cW = canvas.width = hero.offsetWidth;
+  cH = canvas.height = hero.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const stars = Array.from({ length: 50 }, () => ({
+  x: Math.random() * cW,
+  y: Math.random() * cH,
+  vx: (Math.random() - 0.5) * 0.25,
+  vy: (Math.random() - 0.5) * 0.25,
+  r: 1 + Math.random() * 1.5,
+  baseAlpha: 0.15 + Math.random() * 0.35,
+  phase: Math.random() * Math.PI * 2
+}));
+
+let heroMouseX = -1000, heroMouseY = -1000;
+canvas.parentElement.addEventListener('mousemove', e => {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  heroMouseX = e.clientX - rect.left;
+  heroMouseY = e.clientY - rect.top;
+});
+canvas.parentElement.addEventListener('mouseleave', () => {
+  heroMouseX = -1000; heroMouseY = -1000;
+});
+
+function drawConstellation(time) {
+  ctx.clearRect(0, 0, cW, cH);
+
+  // update & draw stars
+  for (const s of stars) {
+    s.x += s.vx;
+    s.y += s.vy;
+    if (s.x < 0) s.x = cW;
+    if (s.x > cW) s.x = 0;
+    if (s.y < 0) s.y = cH;
+    if (s.y > cH) s.y = 0;
+
+    // twinkle
+    const twinkle = Math.sin(time * 0.002 + s.phase) * 0.3 + 0.7;
+    const alpha = s.baseAlpha * twinkle;
+
+    // brighter near mouse
+    const dm = Math.hypot(s.x - heroMouseX, s.y - heroMouseY);
+    const mouseBoost = dm < 200 ? (1 - dm / 200) * 0.5 : 0;
+
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r + mouseBoost * 2, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(212,165,116,${Math.min(alpha + mouseBoost, 0.8)})`;
+    ctx.fill();
+  }
+
+  // draw connections
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i < stars.length; i++) {
+    for (let j = i + 1; j < stars.length; j++) {
+      const dx = stars[i].x - stars[j].x;
+      const dy = stars[i].y - stars[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < LINK_DIST) {
+        const alpha = (1 - dist / LINK_DIST) * 0.12;
+
+        // stronger near mouse
+        const mx = (stars[i].x + stars[j].x) / 2;
+        const my = (stars[i].y + stars[j].y) / 2;
+        const dm = Math.hypot(mx - heroMouseX, my - heroMouseY);
+        const boost = dm < 180 ? (1 - dm / 180) * 0.15 : 0;
+
+        ctx.beginPath();
+        ctx.moveTo(stars[i].x, stars[i].y);
+        ctx.lineTo(stars[j].x, stars[j].y);
+        ctx.strokeStyle = `rgba(212,165,116,${alpha + boost})`;
+        ctx.stroke();
+      }
+    }
+  }
+
+  requestAnimationFrame(drawConstellation);
+}
+requestAnimationFrame(drawConstellation);
+
+// Active nav link on scroll
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 200) current = s.id;
+  });
+  document.querySelectorAll('nav a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+
+</body>
+</html>
